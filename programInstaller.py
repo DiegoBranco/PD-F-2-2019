@@ -4,7 +4,8 @@ import os
 import json
 #importamos ABC para usar clases abstractas
 from abc import ABC, abstractmethod
-
+#importamos shutils para copiar y pegar los iconos que representan los programas en si
+import shutil
 class ProgramInstaller(ABC):
     @abstractmethod
     def install(self):
@@ -12,6 +13,7 @@ class ProgramInstaller(ABC):
 
 class OutlookInstaller(ProgramInstaller):
     def install(self):
+        shutil.copy('instaladores/Outlook.JPG', mid)
         return "Instalando Outlook"
 
 class ProgramDecorator(ProgramInstaller):
@@ -20,14 +22,17 @@ class ProgramDecorator(ProgramInstaller):
 
 class AccessDecorator(ProgramDecorator):
     def install(self,progress):
+        shutil.copy('instaladores/Access.JPG', mid)
         return progress + ", Access"
 
 class KEADecorator(ProgramDecorator):
     def install(self,progress):
+        shutil.copy('instaladores/KEA.JPG', mid)
         return progress + ", KEA"
 
 class RemedyDecorator(ProgramDecorator):
     def install(self,progress):
+        shutil.copy('instaladores/Remedy.JPG', mid)
         return progress + ", REMEDY"
 
 
@@ -66,7 +71,12 @@ class ComputerInstaller:
             return r.install(a.install(o.install()))
         else:
             return 0
-        
+    def checkPrograms(self):
+        onlyfiles = [f for f in os.listdir(mid) if os.path.isfile(os.path.join(mid, f))]
+        listPrograms=""
+        for i in onlyfiles:
+            listPrograms = listPrograms + i[:-4] +", "
+        return listPrograms[:-2]
 
 #variable que muestra ciertas impresiones para facilitar el debug
 debug = 0
@@ -83,11 +93,15 @@ if debug:
     print ("[DEBUG] el ID es: "+ mid)
 
 ci = ComputerInstaller()
-
-if(ci.checkOS()):
-    ci.getMachineID()
-    print(ci.installPrograms(so))
-    print("Instalacion Finalizada")
+try:
+    os.mkdir(mid)
+except OSError:
+    print ("creacion del directorio %s falló" % mid)
+else:
+    if(ci.checkOS()):
+        ci.getMachineID()
+        print(ci.installPrograms(so))
+        print("instalado: "+ci.checkPrograms())
 
  
 
